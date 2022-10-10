@@ -2,36 +2,46 @@
 function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.clearTimeout(n),s-=new Date-e},this.restart=function(t){void 0!==t&&(u=t),n&&window.clearTimeout(n),s=i,this.play()},this.play=function(){o=!1,e=new Date,n=window.setTimeout(u,s)},this.getTime=function(){return s},this.isPaused=function(){return o},this.play()}
 
 /**
- * Jquery Slide Show - fade works on absolute only
+ * jQuery SlideShow
  *
  * @author DaVee8k
- * @version 0.35.1
+ * @version 0.36.0
  * @license WTFNMFPL 1.0
  */
 (function ($) {
 	$.fn.slideShow = function (option) {
 		var self = this;
 		this.page = option['page'] !== undefined ? option['page'] : 'a';
-		this.classCurrent = option['classCurrent'] !== undefined ? option['classCurrent'] : false;
-		this.classOn = option['classOn'] !== undefined ? option['classOn'] : "active";
-		this.classOff = option['classOff'] !== undefined ? option['classOff'] : false;
-		this.arrows = option['arrows'] !== undefined ? option['arrows'] : false;
-		this.pager = option['pager'] !== undefined ? option['pager'] : false;
+		this.classActive = option['classActive'] !== undefined ? option['classActive'] : null;
+		this.classOn = option['classOn'] !== undefined ? option['classOn'] : null;
+		this.classOff = option['classOff'] !== undefined ? option['classOff'] : "slide-off";
 		this.effect = option['effect'] !== undefined ? option['effect'] : "fade";
 		this.pause = option['pause'] !== undefined ? option['pause'] : 5000;
-		this.duration = option['duration'] !== undefined ? option['duration'] : 600;
-		this.timer = false;
-		this.playing = true;
+		this.duration = option['duration'] !== undefined ? option['duration'] : 1200;
+
+		this.elmArrow = null;
+		this.elmPager = null;
 		this.pages = Array();
 		this.current = 0;
 		this.count = 0;
+		this.timer = null;
+		this.playing = true;
 
+		/**
+		 *
+		 * @returns {Boolean}
+		 */
 		this.init = function () {
 			this.pages = $(this).find(this.page);
 			this.count = this.pages.length;
 			return this.count > 1;
 		};
 
+		/**
+		 * Load settings for pages
+		 * @param {type} current
+		 * @returns {undefined}
+		 */
 		this.loadPageData = function (current) {
 			var data = $(this.pages[current]).data("slideshow");
 			if (data) {
@@ -40,34 +50,61 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 			}
 		};
 
+		/**
+		 * Create arrows
+		 * @param {String} element
+		 * @param {String} elClass
+		 */
 		this.createArrows = function (element, elClass) {
-			if ($("#" + element).length === 0) {
-				$(this).after('<div id="' + element + '"><a href="#" class="' + elClass + '-left"></a><a href="#" class="' + elClass + '-right"></a></div>');
+			if (!element || $("#" + element).length === 0) {
+				this.elmArrow = $('<div' + (element ? ' id="' + element + '"' : '') + ' class="' + elClass + '">' +
+					'<a href="#" class="' + elClass + '-left"></a><a href="#" class="' + elClass + '-right"></a></div>');
+				$(this).after(this.elmArrow);
 			}
-			$("#" + element).find('.' + elClass + '-left').click( function () { return self.showNext(false); });
-			$("#" + element).find('.' + elClass + '-right').click( function () { return self.showNext(true); });
+			else if (element) {
+				this.elmArrow = $("#" + element);
+			}
+
+			// add actions
+			$(this.elmArrow).find('.' + elClass + '-left').click( function () { return self.showNext(false); });
+			$(this.elmArrow).find('.' + elClass + '-right').click( function () { return self.showNext(true); });
 		};
 
+		/**
+		 * Create pager
+		 * @param {String} element
+		 * @param {String} elClass
+		 */
 		this.createPager = function (element, elClass) {
-			if ($("#" + element).length === 0) {
-				$(this).after('<div id="' + element + '"' + (elClass ? ' class="' + elClass + '"' : '') + '></div>');
+			if (!element || $("#" + element).length === 0) {
+				this.elmPager = $('<div' + (element ? ' id="' + element + '"' : '') + (elClass ? ' class="' + elClass + '"' : '') + '></div>');
 				for (var i = 0; i < this.count; i++) {
-					$("#" + element).append('<a href="#"><span>' + (i+1) + '</span></a>');
+					$(this.elmPager).append('<a href="#"><span>' + (i+1) + '</span></a>');
 				}
-				$("#" + element).children("a").eq(this.current).addClass("select");
+				$(this.elmPager).find("a:nth-child(" + this.current + 1 + ")").addClass("active");
+				$(this).after(this.elmPager);
 			}
+			else if (element) {
+				this.elmPager = $("#" + element);
+			}
+
 			// add actions
-			for (var i = 0; i < this.count; i++) {
-				$($('#' + element).find("a").eq(i)).click( function () {
-					self.showNum($(this).children('span').text()-1);
-					return false;
-				});
-			}
-			// pause timer on hover
+			$(this.elmPager).find("a").click( function () {
+				var num = Number.parseInt($(this).children('span').text()) - 1;
+				return self.showNum(num);
+			});
+			this.initPause(this.elmPager);
+		};
+
+		/**
+		 * Pause timer on hover
+		 * @param {DOMelement} element
+		 */
+		this.initPause = function (element) {
 			if (this.pause) {
-				$("#" + element).hover(
-					function () { self.timer.pause(); $(this).addClass("ie-fix-slider-hover"); },
-					function () { if (self.playing) self.timer.play(); $(this).removeClass("ie-fix-slider-hover"); }
+				$(element).hover(
+					function () { self.timer.pause(); },
+					function () { self.timer.play(); }
 				);
 			}
 		};
@@ -81,8 +118,7 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 			var next = this.current + (direction ? 1 : -1);
 			if (next < 0) next = this.count - 1;
 			else if (next >= this.count) next = 0;
-			this.showNum(next);
-			return false;
+			return this.showNum(next);
 		};
 
 		/**
@@ -104,6 +140,7 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 				this.loadSrc(nextSlide, function () { self.changeSlide(next); });
 			}
 			else this.changeSlide(next);
+			return false;
 		};
 
 		/**
@@ -144,8 +181,16 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 			}
 		};
 
+		/**
+		 * Change to selected slide
+		 * @param {type} next
+		 * @returns {undefined}
+		 */
 		this.changeSlide = function (next) {
 			var last = this.current;
+			$(this.pages[last]).stop(true, true);
+			$(this.pages[next]).stop(true, true);
+
 			this.current = next;
 			this.playing = true;
 			this.loadPageData(this.current);
@@ -153,25 +198,24 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 			if (this.timer) {
 				if (this.playing === true) this.timer.restart();
 				else this.timer.pause();
-				if (this.pager && $("#"+this.pager).hasClass("ie-fix-slider-hover")) this.timer.pause();
 			}
-			if (this.pager) this.changeDot(this.current);
+			if (this.elmPager) this.changeDot(this.current);
 			if (this.classOff) $(this.pages[last]).addClass(this.classOff);
 			if (this.classOn) $(this.pages[this.current]).addClass(this.classOn);
-			if (this.classCurrent) {
-				$(this.pages[last]).removeClass(this.classCurrent);
-				$(this.pages[this.current]).addClass(this.classCurrent);
+			if (this.classActive) {
+				$(this.pages[last]).removeClass(this.classActive);
+				$(this.pages[this.current]).addClass(this.classActive);
 			}
 
 			var isRelative = $(this.pages[last]).css('position') === 'relative';
 			var direction = (this.current > last && !(last === 0 && this.current === self.count - 1)) || (this.current === 0 && last === self.count - 1);
 			// disable for relative position - imposible to use effect correctly
 			if (this.effect === 'toggle' || isRelative) {
-				if (!this.classCurrent) $(this.pages[this.current]).show();
+				if (!this.classActive) $(this.pages[this.current]).show();
 				setTimeout(function () { self.changeFinish(self.pages[self.current], last); }, isRelative ? 0 : this.duration);
 			}
 			else if (this.effect === 'slide') {
-				var position = direction ? $(this).width() : -$(this).width();
+				var position = $(this).width() * (direction ? 1 : -1);
 				$(this.pages[last]).animate({left: position + 'px'}, this.duration);
 				$(this.pages[this.current]).css('left', -position + 'px').show().animate({left: 0}, this.duration, function () {
 					self.changeFinish(this, last);
@@ -179,7 +223,7 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 				});
 			}
 			else if (this.effect === 'drop') {
-				var position = direction ? $(this).height() : -$(this).height();
+				var position = $(this.pages[this.current]).height() * (direction ? 1 : -1);
 				$(this.pages[last]).animate({top: position + 'px'}, this.duration);
 				$(this.pages[this.current]).css('top', -position + 'px').show().animate({top: 0}, this.duration, function () {
 					self.changeFinish(this, last);
@@ -189,27 +233,36 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 			else {
 				$(this.pages[this.current]).fadeIn(this.duration, function () { self.changeFinish(this, last); });
 			}
-
 		};
 
+		/**
+		 * Remove additional classes and hide previous slide
+		 * @param {DOMelement} showEl
+		 * @param {Integer} last
+		 */
 		this.changeFinish = function (showEl, last) {
-			if (this.effect !== 'toggle' || !this.classCurrent) $(this.pages[last]).hide();
+			if (!this.classActive) $(this.pages[last]).hide();
 			if (this.classOff) $(this.pages[last]).removeClass(this.classOff);
 			if (this.classOn) $(showEl).removeClass(this.classOn);
 		};
 
+		/**
+		 * Change active item in pager
+		 * @param {Integer} current
+		 */
 		this.changeDot = function (current) {
-			$("#" + this.pager).find("a.select").removeClass("select");
-			$("#" + this.pager).find("a:nth-child(" + (current + 1) + ")").addClass("select");
+			$(this.elmPager).find("a.active").removeClass("active");
+			$(this.elmPager).find("a:nth-child(" + (current + 1) + ")").addClass("active");
 		};
 
 		if (this.init()) {
 			this.loadSrc(this.pages[this.current], null);
 			this.loadPageData(this.current);
-			if (this.arrows !== false) this.createArrows(this.arrows, option['arrowsClass'] !== undefined ? option['arrowsClass'] : 'slider-arrow');
-			if (this.pager !== false) this.createPager(this.pager, option['pagerClass'] !== undefined ? option['pagerClass'] : false);
-			if (this.effect !== 'toggle' || !this.classCurrent) $(this).find(this.page).slice(1).hide();
-			if (this.classCurrent && !$(this.pages[this.current]).hasClass(this.classCurrent)) $(this.pages[this.current]).addClass(this.classCurrent);
+
+			if (option['arrows'] !== undefined && option['arrows'] !== false) this.createArrows(typeof option['arrows'] === "boolean" ? "" : option['arrows'], option['arrowsClass'] !== undefined ? option['arrowsClass'] : 'slider-arrows');
+			if (option['pager'] !== undefined && option['pager'] !== false) this.createPager(typeof option['pager'] === "boolean" ? "" : option['pager'], option['pagerClass'] !== undefined ? option['pagerClass'] : null);
+			if (!this.classActive) $(this).find(this.page).slice(1).hide();
+			if (this.classActive && !$(this.pages[this.current]).hasClass(this.classActive)) $(this.pages[this.current]).addClass(this.classActive);
 			if (this.pause) {
 				this.timer = new Timer(function(){ self.showNext(true); }, this.pause);
 				if (this.playing === false) this.timer.pause();
@@ -218,6 +271,10 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 
 		// public functions
 		return {
+			getCurrent: function () { return self.current; },
+			getCount: function () { return self.count; },
+			pause: function () { if (self.pause) self.timer.pause(); },
+			play: function () { if (self.pause) self.timer.play(); },
 			showNum: function (num) { self.showNum(num); },
 			showNext: function (direction) { self.showNext(direction); }
 		};

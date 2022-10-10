@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title>jQuery SlideShow demo</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width = device-width" />
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous" />
+		<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+
+		<link rel="stylesheet" href="../src/style.css" media="all" />
+		<script src="../src/slideShow.js"></script>
+	</head>
+	<body>
+		<header class="text-bg-dark bg-gradient shadow-sm text-center">
+			<h1 class="container py-5">jQuery SlideShow</h1>
+		</header>
+
+		<section class="container my-5 p-4 shadow rounded-2">
+			<h2>Default settings</h2>
+			<pre><code>$("#slide1").slideShow({page: '.slide'});</code></pre>
+
+			<div class="slide-preview">
+				<div id="slide1" class="slideshow">
+					<div class="slide">
+						<img src="../img/slide_img_1.jpg" alt="First" title="Title first" />
+					</div>
+					<div class="slide">
+						<img src="../img/slide_img_2.jpg" alt="Second" title="Title second" />
+					</div>
+					<div class="slide">
+						<img src="../img/slide_img_3.jpg" alt="Third" title="Title third" />
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="container my-5 p-4 shadow rounded-2">
+			<h2>Drop effect with pager</h2>
+			<pre><code>$("#slide2").slideShow({page: '.slide', effect: 'drop', pager: true});</code></pre>
+
+			<div class="slide-preview">
+				<div id="slide2" class="slideshow">
+					<div class="slide">
+						<img src="../img/slide_img_1.jpg" alt="First" title="Title first" />
+					</div>
+					<div class="slide">
+						<img src="../img/slide_img_2.jpg" alt="Second" title="Title second" />
+					</div>
+					<div class="slide">
+						<img src="../img/slide_img_3.jpg" alt="Third" title="Title third" />
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="container my-5 p-4 shadow rounded-2">
+			<h2>Slide effect with arrows</h2>
+			<pre><code>$("#slide3").slideShow({page: '.slide', effect: 'slide', arrows: true});</code></pre>
+
+			<div class="slide-preview">
+				<div id="slide3" class="slideshow">
+					<div class="slide">
+						<img src="../img/slide_img_1.jpg" alt="First" title="Title first" />
+					</div>
+					<div class="slide">
+						<img src="../img/slide_img_2.jpg" alt="Second" title="Title second" />
+					</div>
+					<div class="slide">
+						<img src="../img/slide_img_3.jpg" alt="Third" title="Title third" />
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="container my-5 p-4 shadow rounded-2">
+			<h2>No js effect - pure CSS</h2>
+			<pre><code>$("#slide4").slideShow({page: '.slide', effect: 'toggle', classActive: 'active', classOn: 'slide-show', classOff: 'slide-hide'});</code></pre>
+
+			<div class="slide-preview">
+				<div id="slide4" class="slideshow slideshow-css">
+					<div class="slide active">
+						<img src="../img/slide_img_1.jpg" alt="First" title="Title first" />
+					</div>
+					<div class="slide">
+						<img src="../img/slide_img_2.jpg" alt="Second" title="Title second" />
+					</div>
+					<div class="slide">
+						<img src="../img/slide_img_3.jpg" alt="Third" title="Title third" />
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<script type="text/javascript">
+		//<![CDATA[
+			$(function () {
+				$("#slide1").slideShow({page: '.slide'});
+
+				$("#slide2").slideShow({page: '.slide', effect: 'drop', pager: "slideshow-pager"});
+
+				$("#slide3").slideShow({page: '.slide', effect: 'slide', arrows: true});
+
+				$("#slide4").slideShow({page: '.slide', effect: 'toggle', classActive: 'active', classOn: 'slide-show', classOff: 'slide-hide'});
+			});
+		// ]]>
+		</script>
+	</body>
+</html>
