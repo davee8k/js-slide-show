@@ -5,7 +5,7 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
  * jQuery SlideShow
  *
  * @author DaVee8k
- * @version 0.36.0
+ * @version 0.36.1
  * @license WTFNMFPL 1.0
  */
 (function ($) {
@@ -66,8 +66,14 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 			}
 
 			// add actions
-			$(this.elmArrow).find('.' + elClass + '-left').click( function () { return self.showNext(false); });
-			$(this.elmArrow).find('.' + elClass + '-right').click( function () { return self.showNext(true); });
+			$(this.elmArrow).find('.' + elClass + '-left').click( function (e) {
+				e.preventDefault();
+				self.showNext(false);
+			});
+			$(this.elmArrow).find('.' + elClass + '-right').click( function (e) {
+				e.preventDefault();
+				self.showNext(true);
+			});
 		};
 
 		/**
@@ -89,9 +95,10 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 			}
 
 			// add actions
-			$(this.elmPager).find("a").click( function () {
+			$(this.elmPager).find("a").click( function (e) {
 				var num = Number.parseInt($(this).children('span').text()) - 1;
-				return self.showNum(num);
+				e.preventDefault();
+				self.showNum(num);
 			});
 			this.initPause(this.elmPager);
 		};
@@ -112,13 +119,12 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 		/**
 		 * Pick next slide based on direction
 		 * @param {Boolean} direction
-		 * @returns {Boolean}
 		 */
 		this.showNext = function (direction) {
 			var next = this.current + (direction ? 1 : -1);
 			if (next < 0) next = this.count - 1;
 			else if (next >= this.count) next = 0;
-			return this.showNum(next);
+			this.showNum(next);
 		};
 
 		/**
@@ -140,7 +146,7 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 				this.loadSrc(nextSlide, function () { self.changeSlide(next); });
 			}
 			else this.changeSlide(next);
-			return false;
+			return true;
 		};
 
 		/**
