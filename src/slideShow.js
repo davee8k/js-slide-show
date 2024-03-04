@@ -5,8 +5,8 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
  * jQuery SlideShow
  *
  * @author DaVee8k
- * @version 0.36.1
- * @license WTFNMFPL 1.0
+ * @version 0.40.0
+ * @license https://unlicense.org/
  */
 (function ($) {
 	$.fn.slideShow = function (option) {
@@ -58,7 +58,7 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 		this.createArrows = function (element, elClass) {
 			if (!element || $("#" + element).length === 0) {
 				this.elmArrow = $('<div' + (element ? ' id="' + element + '"' : '') + ' class="' + elClass + '">' +
-					'<a href="#" class="' + elClass + '-left"></a><a href="#" class="' + elClass + '-right"></a></div>');
+					'<button class="' + elClass + '-left"></button><button class="' + elClass + '-right"></button></div>');
 				$(this).after(this.elmArrow);
 			}
 			else if (element) {
@@ -85,9 +85,9 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 			if (!element || $("#" + element).length === 0) {
 				this.elmPager = $('<div' + (element ? ' id="' + element + '"' : '') + (elClass ? ' class="' + elClass + '"' : '') + '></div>');
 				for (var i = 0; i < this.count; i++) {
-					$(this.elmPager).append('<a href="#"><span>' + (i+1) + '</span></a>');
+					$(this.elmPager).append('<button href="#"><span>' + (i+1) + '</span></button>');
 				}
-				$(this.elmPager).find("a:nth-child(" + this.current + 1 + ")").addClass("active");
+				$(this.elmPager).find("button:nth-child(" + this.current + 1 + ")").addClass("active");
 				$(this).after(this.elmPager);
 			}
 			else if (element) {
@@ -95,7 +95,7 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 			}
 
 			// add actions
-			$(this.elmPager).find("a").click( function (e) {
+			$(this.elmPager).find("button").click( function (e) {
 				var num = Number.parseInt($(this).children('span').text()) - 1;
 				e.preventDefault();
 				self.showNum(num);

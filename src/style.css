@@ -53,7 +53,7 @@
 }
 
 /*** arrows ***/
-.slider-arrows a {
+.slider-arrows button {
 	position: absolute;
 	top: 0;
 	width: 8%;
@@ -62,15 +62,17 @@
 	background-position: center center;
 	background-color: rgba(255,255,255,0.1);
 	z-index: 20;
+	border: none;
+	cursor: pointer;
 }
-.slider-arrows a:hover {
+.slider-arrows button:hover {
 	background-color: rgba(255,255,255,0.2);
 }
-.slider-arrows a.slider-arrows-left {
+.slider-arrows button.slider-arrows-left {
 	left: 0;
 	background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23333' stroke-linecap='square' stroke-linejoin='square' stroke-width='2' d='m11 2-6 6 6 6'/%3e%3c/svg%3e");
 }
-.slider-arrows a.slider-arrows-right {
+.slider-arrows button.slider-arrows-right {
 	right: 0;
 	background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23333' stroke-linecap='square' stroke-linejoin='square' stroke-width='2' d='m5 14 6-6-6-6'/%3e%3c/svg%3e");
 }
@@ -83,18 +85,21 @@
 	width: 100%;
 	text-align: center;
 }
-#slideshow-pager a {
+#slideshow-pager button {
 	display: inline-block;
 	background: #333;;
 	height: 10px;
 	width: 10px;
 	border-radius: 10px;
 	margin: 0 5px 0 5px;
+	padding: 0;
 	outline: none;
+	border: none;
+	cursor: pointer;
 }
-#slideshow-pager a.active {
+#slideshow-pager button.active {
 		background: #999;
 }
-#slideshow-pager a span {
+#slideshow-pager button span {
 	display: none;
 }
