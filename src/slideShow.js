@@ -5,7 +5,7 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
  * jQuery SlideShow
  *
  * @author DaVee8k
- * @version 0.40.0
+ * @version 0.40.1
  * @license https://unlicense.org/
  */
 (function ($) {
@@ -85,10 +85,10 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 			if (!element || $("#" + element).length === 0) {
 				this.elmPager = $('<div' + (element ? ' id="' + element + '"' : '') + (elClass ? ' class="' + elClass + '"' : '') + '></div>');
 				for (var i = 0; i < this.count; i++) {
-					$(this.elmPager).append('<button href="#"><span>' + (i+1) + '</span></button>');
+					$(this.elmPager).append('<button type="button" data-item-no="' + (i + 1) + '"></button>');
 				}
-				$(this.elmPager).find("button:nth-child(" + this.current + 1 + ")").addClass("active");
 				$(this).after(this.elmPager);
+				this.changeDot(this.current);
 			}
 			else if (element) {
 				this.elmPager = $("#" + element);
@@ -96,7 +96,7 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 
 			// add actions
 			$(this.elmPager).find("button").click( function (e) {
-				var num = Number.parseInt($(this).children('span').text()) - 1;
+				var num = Number.parseInt($(this).data('item-no')) - 1;
 				e.preventDefault();
 				self.showNum(num);
 			});
@@ -257,8 +257,8 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 		 * @param {Integer} current
 		 */
 		this.changeDot = function (current) {
-			$(this.elmPager).find("a.active").removeClass("active");
-			$(this.elmPager).find("a:nth-child(" + (current + 1) + ")").addClass("active");
+			$(this.elmPager).find("button.active").removeClass("active");
+			$(this.elmPager).find('button[data-item-no="' + (current+1) + '"]').addClass("active");
 		};
 
 		if (this.init()) {
