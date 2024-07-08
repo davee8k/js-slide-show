@@ -5,7 +5,7 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
  * jQuery SlideShow
  *
  * @author DaVee8k
- * @version 0.40.1
+ * @version 0.41.1
  * @license https://unlicense.org/
  */
 (function ($) {
@@ -18,6 +18,7 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 		this.effect = option['effect'] !== undefined ? option['effect'] : "fade";
 		this.pause = option['pause'] !== undefined ? option['pause'] : 5000;
 		this.duration = option['duration'] !== undefined ? option['duration'] : 1200;
+		this.blur = option['blur'] !== undefined ? option['blur'] : false;
 
 		this.elmArrow = null;
 		this.elmPager = null;
@@ -239,6 +240,7 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 			else {
 				$(this.pages[this.current]).fadeIn(this.duration, function () { self.changeFinish(this, last); });
 			}
+			this.changeBlur(this.current);
 		};
 
 		/**
@@ -251,6 +253,17 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 			if (this.classOff) $(this.pages[last]).removeClass(this.classOff);
 			if (this.classOn) $(showEl).removeClass(this.classOn);
 		};
+
+		/**
+		 * Update blured background image
+		 * @param {Integer} active
+		 */
+		this.changeBlur = function (active) {
+			if (this.blur && $(this).width() > (this.blur === true ? 1024 : this.blur)) {
+				var img = $(this.pages[active]).find("img");
+				if (img.length !== 0) $(this).parent().css("background-image", 'url("' + $(img).first().attr("src") + '")');
+			}
+		}
 
 		/**
 		 * Change active item in pager
@@ -274,6 +287,7 @@ function Timer(t,i){var n,e,o=!1,u=t,s=i;this.pause=function(){o=!0,n&&window.cl
 				if (this.playing === false) this.timer.pause();
 			}
 		};
+		this.changeBlur(0);
 
 		// public functions
 		return {
